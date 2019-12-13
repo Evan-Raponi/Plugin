@@ -1,0 +1,90 @@
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import net.minecraft.server.v1_8_R1.Material;
+
+public class Main extends JavaPlugin implements Listener {
+
+
+	public void onEnable() {
+		
+		getLogger().info("Blocks have been enabled!");
+		Bukkit.getPluginManager().registerEvents(this, this);
+		loadConfig();
+		
+	}
+	
+	public void onDisable() {
+		
+		getLogger().info("Blocks have been disabled!");
+		
+		
+	}
+
+	public void loadConfig() {
+		getConfig().options().copyDefaults(true);
+		saveConfig();
+	}
+	
+	@SuppressWarnings("deprecation")
+	@EventHandler
+	public void onBreak(BlockBreakEvent a) {
+		
+		Player p = a.getPlayer();
+		
+		@SuppressWarnings("unused")
+		Block b = a.getBlock();
+		
+		int x = a.getBlock().getTypeId();
+		
+		if(!(p.getGameMode() == GameMode.CREATIVE)){
+		
+		if(getConfig().getIntegerList("Resources").contains(a.getBlock().getTypeId())) {
+			
+			a.setCancelled(true);
+			p.getInventory().addItem(new ItemStack(x));
+			
+			if(a.getBlock() == Material.LEAVES) {
+				
+				p.getInventory().addItem(new ItemStack(org.bukkit.Material.APPLE));
+			
+	
+		}
+	return;
+	
+		}
+		}
+			}
+		
+	
+	
+	@SuppressWarnings("deprecation")
+	@EventHandler
+	public void Interaction(PlayerInteractEvent b) {
+		
+		Block block = b.getClickedBlock();
+		
+		if(getConfig().getIntegerList("Blocked-Interactions").contains(block.getTypeId())) {
+			
+			b.setCancelled(true);
+			return;
+		}
+	}
+		@EventHandler
+		public void onTeleport(PlayerTeleportEvent event) {
+		if(event.getCause().equals(TeleportCause.ENDER_PEARL)) {
+		event.setCancelled(true);
+		}
+		}
+		
+	}
